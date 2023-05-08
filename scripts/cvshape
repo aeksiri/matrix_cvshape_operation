@@ -127,12 +127,12 @@ def scan_callback(msg):
     if ((right+left)/2) <= obstacle_stop_distance:
         vel_scale = 0
         print('!!! STOP !!!')
-        update_command_vel(0, 0)
+        update_command_vel(0, ang_vel)
     else:
         vel_scale = vel_scale
         if glob_travel_distance >= distance_to_travel:
             print('!!! Arrived !!!')
-            update_command_vel(0, 0)
+            update_command_vel(0, ang_vel)
             # TODO
             print('!!! Stop and Kill this node !!!')
         else:
