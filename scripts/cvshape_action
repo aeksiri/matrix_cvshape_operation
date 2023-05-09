@@ -2,7 +2,7 @@
 
 import rospy
 import actionlib
-from matrix_msgs.msg import RobotMode, WallFollowingAction, WallFollowingGoal, WallFollowingFeedback, WallFollowingResult
+from matrix_msgs.msg import RobotMode, CenterVShapeTrackingAction, CenterVShapeTrackingGoal, CenterVShapeTrackingFeedback, CenterVShapeTrackingResult
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
