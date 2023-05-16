@@ -19,7 +19,7 @@ class Sequence(Enum):
     INIT=0,
     DATA_CHECKING=1,
     INIT_PARAM=2,
-    WALL_TRACKING=3,
+    CENTER_VSHAPE_TRACKING=3,
     FINISH=4,
     PAUSE=5,
     ERROR=6
