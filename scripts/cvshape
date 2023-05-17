@@ -37,11 +37,12 @@ def scan_callback(msg):
     scan_max_value = msg.range_max
     # print(len(msg.ranges))
     # print(msg.ranges[750])
-    right_angle = 1454
-    left_angle = 1547
+    # 1500 +/- (9.2 x Degree)
     center_angle = 1500
-    right = msg.ranges[right_angle]    # + 5.625 degree from x-axis    #[3150]
-    left = msg.ranges[left_angle]      # - 5.625 degree from x-axis    #[450]
+    right_angle = 1463 # 1454= -5.625 degree from x-axis
+    left_angle =  1537 # 1547= +5.625 degree from x-axis
+    right = msg.ranges[right_angle]    
+    left = msg.ranges[left_angle] 
     # print(right)
     # print(left)
     # print("")
