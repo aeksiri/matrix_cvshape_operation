@@ -209,3 +209,12 @@ catkin_install_python(PROGRAMS
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+# Mark other files for installation (e.g. launch and bag files, etc.)
+install(DIRECTORY
+  include
+  launch
+  param
+  # maps
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

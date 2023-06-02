@@ -71,6 +71,23 @@ class ActionServer():
     
     def update_command_vel(self, linear_vel, angular_vel):
         msg = Twist()
+
+        if linear_vel >= 0.2:
+            linear_vel = 0.2
+        elif linear_vel <= 0:
+            linear_vel = 0
+        elif angular_vel >= linear_vel*2:
+            angular_vel = linear_vel*2
+        elif angular_vel <= -linear_vel*2:
+            angular_vel = -linear_vel*2
+        else:
+            pass
+        
+        # print("--")
+        # print(linear_vel)
+        # print(angular_vel)
+        # print("----")
+
         msg.linear.x = linear_vel
         msg.angular.z = angular_vel
         self.pub_cmd_vel.publish(msg)
@@ -157,10 +174,10 @@ class ActionServer():
                 #                           Center VShape Tracking Control Begin
                 #
                 #---------------------------------------------------------------------------------------#
-                # 1500 +/- (9.2 x Degree)
-                center_angle = 1500
-                right_angle = 1463 # 1454= -5.625 degree from x-axis
-                left_angle =  1537 # 1547= +5.625 degree from x-axis
+                #
+                center_angle = 0
+                right_angle = 3550 # degree from x-axis
+                left_angle =  50 # degree from x-axis
                 right = self.msg.ranges[right_angle]    
                 left = self.msg.ranges[left_angle]          
                 # print(right)
@@ -257,12 +274,16 @@ class ActionServer():
                     vel_scale = vel_scale
                     if self.glob_travel_distance >= distance_to_travel:
                         #print('!!! Arrived !!!')
-                        update_command_vel(0, 0)
+                        self.update_command_vel(0, 0)
                         # TODO
                         # print('!!! Stop and Kill this node !!!')
+                        text = "Arrived Destination"
+                        task_result = CenterVShapeTrackingResult.SUCCESS
+                        success = True
+                        sequence = Sequence.FINISH.value
                     else:
                         # print('!!! GO GO GO !!!', glob_travel_distance)
-                        # print('!!! GO GO GO !!!', ((right+left)/2))
+                        print('!!! GO GO GO !!!', ((right+left)/2))
                         self.update_command_vel(vel_scale*lin_vel_max, vel_scale*ang_vel)
 
 
