@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python
 
 import rospy
 import actionlib
@@ -28,19 +28,6 @@ class Sequence(Enum):
 class ActionServer():
 
     def __init__(self):
-        if not rospy.has_param("~right_angle"):
-            rospy.set_param("~right_angle", 1742)
-        if not rospy.has_param("~right_angle_offset"):
-            rospy.set_param("~right_angle_offset", 50)
-        if not rospy.has_param("~left_angle"):
-            rospy.set_param("~left_angle", 1843)
-        if not rospy.has_param("~left_angle_offset"):
-            rospy.set_param("~left_angle_offset", 50)
-        self.right_angle_param = rospy.get_param("~right_angle")
-        self.right_angle_offset_param = rospy.get_param("~right_angle_offset")
-        self.left_angle_param = rospy.get_param("~left_angle")
-        self.left_angle_offset_param = rospy.get_param("~left_angle_offset")
-
         self.sub_LaserScan = rospy.Subscriber('/scan', LaserScan, self.scan_callback)
         self.sub_Odom = rospy.Subscriber('/odom', Odometry, self.odom_callback)
         self.sub_RobotMode = rospy.Subscriber('/matrix_mode_controller/mode', RobotMode, self.mode_callback)   
@@ -81,8 +68,7 @@ class ActionServer():
     
     def scan_callback(self, raw_msg):
         self.msg = raw_msg
-        # print(self.msg.ranges[1742:1842])
-        # print("----")
+        # print("len:", len(self.msg.ranges))
     
     def update_command_vel(self, linear_vel, angular_vel):
         msg = Twist()
@@ -91,17 +77,20 @@ class ActionServer():
             linear_vel = 0.2
         elif linear_vel <= 0:
             linear_vel = 0
-        elif angular_vel >= linear_vel*2:
+        else:
+            pass
+
+        if angular_vel >= linear_vel*2:
             angular_vel = linear_vel*2
         elif angular_vel <= -linear_vel*2:
             angular_vel = -linear_vel*2
         else:
             pass
         
-        # print("--")
-        # print(linear_vel)
-        # print(angular_vel)
-        # print("----")
+        print("--")
+        print(linear_vel)
+        print(angular_vel)
+        print("----")
 
         msg.linear.x = linear_vel
         msg.angular.z = angular_vel
@@ -190,60 +179,20 @@ class ActionServer():
                 #
                 #---------------------------------------------------------------------------------------#
                 #
-                
                 #               ### SDR100  ### SMR200  ###
                 # lenght        ### 3600    ### 3584    ###
                 # center_angle  ### 0       ### 1792    ###
                 # right_angle   ### 3550    ### 1742    ###
                 # left_angle    ### 50      ### 1842
 
-                center_angle = 0
-                right_angle = self.right_angle_param # degree from x-axis
-                left_angle =  self.left_angle_param # degree from x-axis
+                center_angle = 1792 #1800 #1798
+                right_angle = 1742 #1750 #1748
+                left_angle =  1842 #1850 #1848
+
                 right = self.msg.ranges[right_angle]    
-                left = self.msg.ranges[left_angle]   
-                
-                #**********************************************#
-                #
-                # Maintainer Jarubank Wed Jul 5 2023, 15:30 begin
-                #
-                #**********************************************#
-                right_array = self.msg.ranges[right_angle:right_angle + right_angle_offset_param]    
-                left_array = self.msg.ranges[left_angle:left_angle + left_angle_offset_param]      
-
-                left_avr = 0.0
-                l_n = 0
-
-                right_avr = 0.0
-                r_n = 0
-
-                for x in left_array:
-                    if x != 31.0:
-                        left_avr += x 
-                        l_n += 1
-                print(left_avr)
-                left_avr = left_avr/l_n
-
-                for x in right_array:
-                    if x != 31.0:
-                        right_avr += x 
-                        r_n += 1
-                right_avr = right_avr/r_n
-
-                left = left_avr
-                right = right_avr
-
-
-                print("left_avr {},  right_avr {}".format(left_avr, right_avr))
-
-                #**********************************************#
-                #
-                # Maintainer Jarubank Wed Jul 5 2023, 15:30 end
-                #
-                #**********************************************#
-
-                # print(right)
-                # print(left)
+                left = self.msg.ranges[left_angle]          
+                # print("right",right)
+                # print("left",left)
                 # print("")
 
 
@@ -297,7 +246,7 @@ class ActionServer():
                 # left = msg.ranges[1125]
                 # error = left - right
                 # kp = 0.6
-                kp = 1.0
+                kp = 15.0
                 # print(error)
 
                 if error > 0.3:
@@ -324,12 +273,11 @@ class ActionServer():
                 stop_distance = goal.stop_dist # 0.75 # [m]
 
                 # if vel_scale < stop_distance:
-                # if ((right+left)/2) <= stop_distance:
-                if ((left)/1) <= stop_distance:
+                if ((right+left)/2) <= stop_distance:
                     vel_scale = 0
                     print('!!! STOP !!!')
                     self.update_command_vel(0, 0)
-                    text = "Arrived Destination"
+                    text = "Arrived at the stop_distance"
                     task_result = CenterVShapeTrackingResult.SUCCESS
                     success = True
                     sequence = Sequence.FINISH.value
@@ -340,14 +288,13 @@ class ActionServer():
                         self.update_command_vel(0, 0)
                         # TODO
                         # print('!!! Stop and Kill this node !!!')
-                        text = "Arrived Destination"
+                        text = "Arrived at the distance_to_travel"
                         task_result = CenterVShapeTrackingResult.SUCCESS
                         success = True
                         sequence = Sequence.FINISH.value
                     else:
                         # print('!!! GO GO GO !!!', glob_travel_distance)
-                        print('!!! GO GO GO !!!', ((right+left)/2))
-                        print("distance left {}, distance right {}".format(left, right))
+                        print('!!! Moving to V-Marker !!!', ((right+left)/2))
                         self.update_command_vel(vel_scale*lin_vel_max, vel_scale*ang_vel)
 
 

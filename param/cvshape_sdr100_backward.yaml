@@ -1,0 +1,12 @@
+#                     ### SDR100  ### SMR200  ###
+# lenght              ### 3600    ### 3584    ###
+# center_angle        ### 0       ### 1792    ###
+# right_angle         ### 3550    ### 1742    ###
+# left_angle          ### 50      ### 1842    ###
+# left_angle_offset   ### 1       ### 50      ###
+# right_angle_offset  ### 1       ### 50      ###
+
+left_angle: 1750
+left_angle_offset: 1
+right_angle: 1850
+right_angle_offset: 1

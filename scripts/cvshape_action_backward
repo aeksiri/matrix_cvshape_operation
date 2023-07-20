@@ -89,8 +89,8 @@ class ActionServer():
 
         if linear_vel >= 0.2:
             linear_vel = 0.2
-        elif linear_vel <= 0:
-            linear_vel = 0
+        elif linear_vel <= -0.2:
+            linear_vel = -0.2
         elif angular_vel >= linear_vel*2:
             angular_vel = linear_vel*2
         elif angular_vel <= -linear_vel*2:
@@ -103,8 +103,8 @@ class ActionServer():
         # print(angular_vel)
         # print("----")
 
-        msg.linear.x = linear_vel
-        msg.angular.z = angular_vel
+        msg.linear.x = linear_vel * -1.0
+        msg.angular.z = angular_vel * -1.0
         self.pub_cmd_vel.publish(msg)
 
     def execute_cb(self, goal):
@@ -191,11 +191,13 @@ class ActionServer():
                 #---------------------------------------------------------------------------------------#
                 #
                 
-                #               ### SDR100  ### SMR200  ###
-                # lenght        ### 3600    ### 3584    ###
-                # center_angle  ### 0       ### 1792    ###
-                # right_angle   ### 3550    ### 1742    ###
-                # left_angle    ### 50      ### 1842
+                #                     ### SDR100  ### SMR200  ###
+                # lenght              ### 3600    ### 3584    ###
+                # center_angle        ### 0       ### 1792    ###
+                # right_angle         ### 3550    ### 1742    ###
+                # left_angle          ### 50      ### 1842    ###
+                # left_angle_offset   ### 1       ### 50      ###
+                # right_angle_offset  ### 1       ### 50      ###
 
                 center_angle = 0
                 right_angle = self.right_angle_param # degree from x-axis
@@ -208,8 +210,8 @@ class ActionServer():
                 # Maintainer Jarubank Wed Jul 5 2023, 15:30 begin
                 #
                 #**********************************************#
-                right_array = self.msg.ranges[right_angle:right_angle + right_angle_offset_param]    
-                left_array = self.msg.ranges[left_angle:left_angle + left_angle_offset_param]      
+                right_array = self.msg.ranges[right_angle:right_angle + self.right_angle_offset_param]    
+                left_array = self.msg.ranges[left_angle:left_angle + self.left_angle_offset_param]      
 
                 left_avr = 0.0
                 l_n = 0
@@ -300,12 +302,12 @@ class ActionServer():
                 kp = 1.0
                 # print(error)
 
-                if error > 0.3:
-                    error = 0.3
-                elif error < -0.3:
-                    error = -0.3
-                else:
-                    error = error
+                # if error > 0.3:
+                #     error = 0.3
+                # elif error < -0.3:
+                #     error = -0.3
+                # else:
+                #     error = error
 
                 lin_vel_max = goal.lin_vel_max # 0.05
                 ang_vel_max = lin_vel_max * 2

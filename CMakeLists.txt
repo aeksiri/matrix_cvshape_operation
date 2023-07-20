@@ -166,6 +166,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/cvshape
   scripts/cvshape_action
+  scripts/cvshape_action_backward
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
